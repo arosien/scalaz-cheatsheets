@@ -1,0 +1,114 @@
+\documentclass{tufte-handout}
+
+%\geometry{showframe}% for debugging purposes -- displays the margins
+
+\usepackage{amsmath}
+
+% Set up the images/graphics package
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+\graphicspath{{graphics/}}
+
+% The following package makes prettier tables.  We're all about the bling!
+\usepackage{booktabs}
+
+% The units package provides nice, non-stacked fractions and better spacing
+% for units.
+\usepackage{units}
+
+% The fancyvrb package lets us customize the formatting of verbatim
+% environments.  We use a slightly smaller font.
+\usepackage{fancyvrb}
+\fvset{fontsize=\normalsize}
+
+% Small sections of multiple columns
+\usepackage{multicol}
+
+% Provides paragraphs of dummy text
+\usepackage{lipsum}
+
+% These commands are used to pretty-print LaTeX commands
+\newcommand{\doccmd}[1]{\texttt{\textbackslash#1}}% command name -- adds backslash automatically
+\newcommand{\docopt}[1]{\ensuremath{\langle}\textrm{\textit{#1}}\ensuremath{\rangle}}% optional command argument
+\newcommand{\docarg}[1]{\textrm{\textit{#1}}}% (required) command argument
+\newenvironment{docspec}{\begin{quote}\noindent}{\end{quote}}% command specification environment
+\newcommand{\docenv}[1]{\textsf{#1}}% environment name
+\newcommand{\docpkg}[1]{\texttt{#1}}% package name
+\newcommand{\doccls}[1]{\texttt{#1}}% document class name
+\newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
+
+\title{scalaz "Monads" Cheat Sheet}
+\author[Adam Rosien]{Adam Rosien (\href{mailto:adam@rosien.net}{adam@rosien.net})}
+\date{2 December 2014}  % if the \date{} command is left out, the current date will be used
+
+\begin{document}
+
+\maketitle% this prints the handout title, author, and date
+
+
+\section{\texttt{* -> *} Typeclasses}\label{sec:sigs}
+
+Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "hole", i.e., \texttt{F[\_]}.
+
+\begin{table}[ht]
+  \centering
+  \fontfamily{ppl}\selectfont
+  \begin{tabular}{rllll}
+    \toprule
+    Typeclass & Operation & Signature \\ 
+    \midrule
+    Functor & map & \texttt{F[A] => (A => B) => F[B]} \\
+    Contravariant & contramap & \texttt{F[A] => (B => A) => F[B]} \\
+    Apply & ap & \texttt{F[A] => F[A => B] => F[B]} \\
+    Bind & flatMap & \texttt{F[A] => (A => F[B]) => F[B]} \\
+    Traverse & traverse & \texttt{F[A] => (A => G[B]) => G[F[B]]} \\
+    Foldable & foldMap & \texttt{F[A] => (A => B) => B} \\
+    Zip & zip & \texttt{F[A] => F[B] => F[(A, B)]} \\
+    Unzip & unzip & \texttt{F[(A, B)] => (F[A], F[B])} \\
+    Plus & plus & \texttt{F[A] => F[A] => F[A]} \\
+    \midrule
+    Cobind & cobind & \texttt{F[A] => (F[A] => B) => F[B]} \\
+   \bottomrule
+  \end{tabular}
+  \label{tab:normaltab}
+  %\zsavepos{pos:normaltab}
+\end{table}
+
+
+\section{Monads}\label{sec:monads}
+
+\begin{table}[ht]
+  \centering
+  \fontfamily{ppl}\selectfont
+  \begin{tabular}{rllll}
+    \toprule
+    Monad        & Effect\footnotemark[1]  & Sequences as...                & \texttt{M[A]} \\ 
+    \midrule
+    Identity     & nothing                 & continue                       & \texttt{Id[A]} \\
+    List         & arbitrary \# of results & halt if empty;                 & \texttt{List[A]} \\
+                 &                         & continue with each value       & \\
+    Option       & anonymous exception     & halt if \texttt{None};         & \texttt{Option[A]} \\
+                 &                         & continue with value of \texttt{Some} & \\
+    Either       & exception               & halt if \texttt{Left};         & \texttt{Either[L, R]} \\
+                 &                         & continue with value of \texttt{Right} & \\
+    Reader       & read-only state         & function composition           & \texttt{E => A} \\
+    Writer       & append-only state       & append log value W             & \texttt{Writer[W, A]} \\
+    State        & read+write state        & pass along the (updated) state & \texttt{State[S, A]} \\
+    Continuation & continuation-passing    &                                & \texttt{Responder[A]} \\
+    IO           & side-effect\footnotemark[2] & perform side-effect        & \texttt{IO[A]} \\
+    \bottomrule
+  \end{tabular}
+  \label{tab:normaltab}
+  %\zsavepos{pos:normaltab}
+\end{table}
+
+\footnotetext[1]{An \textit{effect} is \textbf{not} a \textit{side-effect}: the former is referentially-transparent while the latter is not.}
+\footnotetext[2]{Wait, how can a side-effect become just an effect?}
+
+\bibliography{sample-handout}
+\bibliographystyle{plainnat}
+
+\fancyfoot[C]{\copyright 2014 Adam S. Rosien (\href{mailto:adam@rosien.net}{\texttt{adam@rosien.net}}) \\ Source at \href{https://github.com/arosien/scalaz-base-talk-201208}{\texttt{https://github.com/arosien/scalaz-base-talk-201208}}}
+
+
+\end{document}
