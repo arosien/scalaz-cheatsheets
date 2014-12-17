@@ -37,7 +37,7 @@
 \newcommand{\doccls}[1]{\texttt{#1}}% document class name
 \newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
 
-\title{scalaz "Monads" Cheat Sheet}
+\title{scalaz Cheat Sheet}
 \author[Adam Rosien]{Adam Rosien (\href{mailto:adam@rosien.net}{adam@rosien.net})}
 \date{2 December 2014}  % if the \date{} command is left out, the current date will be used
 
@@ -53,25 +53,72 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
 \begin{table}[ht]
   \centering
   \fontfamily{ppl}\selectfont
-  \begin{tabular}{rllll}
-    \toprule
-    Typeclass & Operation & Signature \\ 
+  \begin{tabular}{rll}
+    Typeclass & Operation & Signature \\
     \midrule
-    Functor & map & \texttt{F[A] => (A => B) => F[B]} \\
+    Functor       & map & \texttt{F[A] => (A => B) => F[B]} \\
     Contravariant & contramap & \texttt{F[A] => (B => A) => F[B]} \\
-    Apply & ap & \texttt{F[A] => F[A => B] => F[B]} \\
-    Bind & flatMap & \texttt{F[A] => (A => F[B]) => F[B]} \\
-    Traverse & traverse & \texttt{F[A] => (A => G[B]) => G[F[B]]} \\
-    Foldable & foldMap & \texttt{F[A] => (A => B) => B} \\
-    Zip & zip & \texttt{F[A] => F[B] => F[(A, B)]} \\
-    Unzip & unzip & \texttt{F[(A, B)] => (F[A], F[B])} \\
-    Plus & plus & \texttt{F[A] => F[A] => F[A]} \\
-    \midrule
-    Cobind & cobind & \texttt{F[A] => (F[A] => B) => F[B]} \\
-   \bottomrule
+    Apply         & ap & \texttt{F[A] => F[A => B] => F[B]} \\
+    Bind          & flatMap & \texttt{F[A] => (A => F[B]) => F[B]} \\
+    Traverse      & traverse & \texttt{F[A] => (A => G[B]) => G[F[B]]} \\
+    Foldable      & foldMap & \texttt{F[A] => (A => B) => B} \\
+    Zip           & zip & \texttt{F[A] => F[B] => F[(A, B)]} \\
+    Plus          & plus & \texttt{F[A] => F[A] => F[A]} \\
+    Cobind        & cobind & \texttt{F[A] => (F[A] => B) => F[B]} \\
+    Unzip         & unzip & \texttt{F[(A, B)] => (F[A], F[B])} \\
   \end{tabular}
   \label{tab:normaltab}
-  %\zsavepos{pos:normaltab}
+\end{table}
+
+
+\begin{table}[ht]
+  \centering
+  \fontfamily{ppl}\selectfont
+  \begin{tabular}{rlll}
+    Typeclass & Signature & Method\\
+    \midrule
+    Functor & \textbf{\texttt{F[A] => \hfill (A => B) => F[B]}} & \textbf{map} \\
+            & \texttt{F[A] => \hfill B => F[B]} & as \\
+            & \texttt{F[A] => \hfill F[(A, A)]} & fpair \\
+            & \texttt{F[A] => \hfill G[\_] => F[G[A]]} & fpoint \\
+            & \texttt{F[A] => \hfill (A => B) => F[(A, B)]} & fproduct \\
+            & \texttt{F[A] => \hfill B => F[(B, A)]} & strengthL \\
+            & \texttt{F[A] => \hfill B => F[(A, B)]} & strengthR \\
+            & \texttt{F[A] => \hfill F[Unit]} & void \\[.5cm]
+    Contravariant & contramap & \texttt{F[A] => \hfill (B => A) => F[B]} \\[.5cm]
+    Apply         & ap & \texttt{F[A] => \hfill F[A => B] => F[B]} \\
+                  &    & \texttt{F[A] => \hfill F[B] => F[(A,B)]} & tuple \\
+                  &    & \texttt{F[A] => \hfill F[B] => F[B]} & *> \\
+                  &    & \texttt{F[A] => \hfill F[B] => F[A]} & <* \\[.5cm]
+    Applicative   & ap & \texttt{F[A] => \hfill F[A => B] => F[B]} \\
+                  & & \texttt{F[A] => \hfill Boolean => F[Unit]} & unlessM \\
+                  & & \texttt{F[A] => \hfill Boolean => F[Unit]} & whenM \\
+                  & & \texttt{F[A] => \hfill Int => F[List[A]]} & replicateM \\
+                  & & \texttt{F[A] => \hfill Int => F[Unit]} & replicateM\_ \\[.5cm]
+    Bind          & flatMap & \texttt{F[A] => \hfill (A => F[B]) => F[B]} \\
+                  &         & \texttt{F[A] => \hfill F[B] => F[B]} & \verb$>>$ \\[.5cm]
+    Traverse      & traverse & \texttt{F[A] => \hfill (A => G[B]) => G[F[B]]} \\
+                  &          & \texttt{F[A] => \hfill (A => G[F[B]]) => G[F[B]]} & traverseM \\
+                  &          & \texttt{F[A] => \hfill F[A]} & reverse \\
+                  &          & \texttt{F[A] => \hfill F[B] => F[(A, Option[B])]} & zipL \\
+                  &          & \texttt{F[A] => \hfill F[B] => F[(Option[A], B)]} & zipR \\
+%                  &          & \texttt{\hfill F[B] => ((A, Option[B]) => C) => (List[B], F[C])} & zipWith \\
+%                  &          & \texttt{\hfill F[B] => ((A, Option[B]) => C) => F[C]} & zipWithL \\
+%                  &          & \texttt{\hfill F[B] => ((Option[A], B) => C) => F[C]} & zipWithR \\
+%                  &          & \texttt{\hfill S => ((S,A) => (S,B)) => (S, F[B])} & mapAccumL \\
+%                  &          & \texttt{\hfill S => ((S,A) => (S,B)) => (S, F[B])} & mapAccumR \\
+%                  &          & \texttt{\hfill S => (A => State[S, B]) => (S, F[B])} & runTraverseS \\
+%                  &          & \texttt{\hfill (A => State[S, B]) => State[S, F[B]]} & traverseS \\
+%                  &          & \texttt{\hfill (A => State[S, G[B]]) => State[S, G[F[B]]]} & traverseSTrampoline \\
+%                  &          & \texttt{\hfill (A => Kleisli[G, S, B]) => Kleisli[G, S, F[B]]} & traverseKTrampoline \\
+                  &          & \texttt{F[G[A]] => \hfill G[F[A]]} & sequence \\[.5cm]
+    Foldable      & foldMap & \texttt{F[A] => \hfill (A => B) => B} \\[.5cm]
+    Zip           & zip & \texttt{F[A] => \hfill F[B] => F[(A, B)]} \\[.5cm]
+    Plus          & plus & \texttt{F[A] => \hfill F[A] => F[A]} \\[.5cm]
+    Cobind        & cobind & \texttt{F[A] => \hfill (F[A] => B) => F[B]} \\[.5cm]
+    Unzip         & unzip & \texttt{F[(A, B)] => \hfill (F[A], F[B])} \\
+  \end{tabular}
+  \label{tab:normaltab}
 \end{table}
 
 
@@ -81,29 +128,50 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
   \centering
   \fontfamily{ppl}\selectfont
   \begin{tabular}{rllll}
-    \toprule
-    Monad        & Effect\footnotemark[1]  & Sequences as...                & \texttt{M[A]} \\ 
+ %   \toprule
+    Monad & Type & Effect\footnotemark[1] \\
     \midrule
-    Identity     & nothing                 & continue                       & \texttt{Id[A]} \\
-    List         & arbitrary \# of results & halt if empty;                 & \texttt{List[A]} \\
-                 &                         & continue with each value       & \\
-    Option       & anonymous exception     & halt if \texttt{None};         & \texttt{Option[A]} \\
-                 &                         & continue with value of \texttt{Some} & \\
-    Either       & exception               & halt if \texttt{Left};         & \texttt{Either[L, R]} \\
-                 &                         & continue with value of \texttt{Right} & \\
-    Reader       & read-only state         & function composition           & \texttt{E => A} \\
-    Writer       & append-only state       & append log value W             & \texttt{Writer[W, A]} \\
-    State        & read+write state        & pass along the (updated) state & \texttt{State[S, A]} \\
-    Continuation & continuation-passing    &                                & \texttt{Responder[A]} \\
-    IO           & side-effect\footnotemark[2] & perform side-effect        & \texttt{IO[A]} \\
-    \bottomrule
+    Identity & \texttt{Id[A]} & nothing \\
+    List  & \texttt{List[A]}\footnotemark[2]          & arbitrary \# of results \\
+    & \verb$IList[A]$ & \\
+    Option & \texttt{Option[A]}\footnotemark[2]       & anonymous exception \\
+    & \verb$Maybe[A]$ & optional values \\
+    Either & \texttt{Either[A, B]}\footnotemark[2]        & exception \\
+    & \verb$\/[A, B]$ & \\
+    Reader & \texttt{Reader[E, A]}       & read environment value of type \verb$E$  \\
+                 & & "dependency injection" \\
+    Writer & \texttt{Writer[W, A]}        & append values of type \verb$W$ \\
+              & & "logging" \\
+    State & \texttt{State[S, A]}      & get/set state of type \verb$S$ \\
+    IO  & \texttt{IO[A]}         & side-effect\footnotemark[3]  \\
+%    \bottomrule
   \end{tabular}
   \label{tab:normaltab}
   %\zsavepos{pos:normaltab}
 \end{table}
 
 \footnotetext[1]{An \textit{effect} is \textbf{not} a \textit{side-effect}: the former is referentially-transparent while the latter is not.}
-\footnotetext[2]{Wait, how can a side-effect become just an effect?}
+
+\footnotetext[2]{Defined in Scala itself, not in scalaz.}
+
+\footnotetext[3]{Wait, how can a side-effect become just an effect?}
+
+
+\section{Monad Transformers}\label{sec:monadtrans}
+
+\begin{table}[ht]
+  \centering
+  \fontfamily{ppl}\selectfont
+  \begin{tabular}{rllll}
+  OptionT \\
+  EitherT \\
+  ReaderT \\
+  WriterT \\
+  StateT \\
+  \end{tabular}
+  \label{tab:normaltab}
+  %\zsavepos{pos:normaltab}
+\end{table}
 
 \bibliography{sample-handout}
 \bibliographystyle{plainnat}
