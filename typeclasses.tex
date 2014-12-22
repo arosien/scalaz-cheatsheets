@@ -29,19 +29,11 @@
 
 \usepackage{multirow}
 
-\newcommand{\fa}{\texttt{F[A]}}
-\newcommand{\fb}{\texttt{F[B]}}
+\newcommand{\fa}{F[A]}
+\newcommand{\fb}{F[B]}
 \newcommand{\rarr}{\texttt{=>}}
-
-% These commands are used to pretty-print LaTeX commands
-\newcommand{\doccmd}[1]{\texttt{\textbackslash#1}}% command name -- adds backslash automatically
-\newcommand{\docopt}[1]{\ensuremath{\langle}\textrm{\textit{#1}}\ensuremath{\rangle}}% optional command argument
-\newcommand{\docarg}[1]{\textrm{\textit{#1}}}% (required) command argument
-\newenvironment{docspec}{\begin{quote}\noindent}{\end{quote}}% command specification environment
-\newcommand{\docenv}[1]{\textsf{#1}}% environment name
-\newcommand{\docpkg}[1]{\texttt{#1}}% package name
-\newcommand{\doccls}[1]{\texttt{#1}}% document class name
-\newcommand{\docclsopt}[1]{\texttt{#1}}% document class option name
+\newcommand{\fTwo}[2]{\texttt{#1} & \rarr & & & \texttt{#2}}
+\newcommand{\fThree}[3]{\texttt{#1} & \rarr & \texttt{#2} & \rarr & \texttt{#3}}
 
 \title{scalaz Cheat Sheet}
 \author[Adam Rosien]{Adam Rosien (\href{mailto:adam@rosien.net}{adam@rosien.net})}
@@ -63,20 +55,19 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
   \begin{tabular}{rcrlccl}
     Typeclass & Method & \multicolumn{5}{c}{Signature} \\
     \midrule
-    Functor       & map & \fa & \rarr & \texttt{(A => B)} & \rarr & \fb \\
-    Contravariant & contramap & \fa & \rarr & \texttt{(B => A)} & \rarr & \fb \\
-    Apply         & ap & \fa & \rarr & \texttt{F[A => B]} & \rarr & \fb \\
-    Bind          & flatMap & \fa & \rarr & \texttt{(A => F[B])} & \rarr & \fb \\
-    Traverse      & traverse & \fa & \rarr & \texttt{(A => G[B])} & \rarr & \texttt{G[F[B]]} \\
-    Foldable      & foldMap & \fa & \rarr & \texttt{(A => B)} & \rarr & \texttt{B} \\
-    Plus          & plus & \fa & \rarr & \fa & \rarr & \fa \\
-    Cobind        & cobind & \fa & \rarr & \texttt{(F[A] => B)} & \rarr & \fb \\
-    Zip           & zip & \fa & \rarr & \fb & \rarr & \texttt{F[(A, B)]} \\
-    Unzip         & unzip & \texttt{F[(A, B)]} & & &  \rarr & \texttt{(F[A], F[B])} \\
+    Functor       & map & \fThree{\fa}{(A => B)}{\fb} \\
+    Contravariant & contramap & \fThree{\fa}{(B => A)}{\fb} \\
+    Apply         & ap & \fThree{\fa}{F[A => B]}{\fb} \\
+    Bind          & flatMap & \fThree{\fa}{(A => F[B])}{\fb} \\
+    Traverse      & traverse & \fThree{\fa}{(A => G[B])}{G[F[B]]} \\
+    Foldable      & foldMap & \fThree{\fa}{(A => B)}{B} \\
+    Plus          & plus & \fThree{\fa}{\fa}{\fa} \\
+    Cobind        & cobind & \fThree{\fa}{(F[A] => B)}{\fb} \\
+    Zip           & zip & \fThree{\fa}{\fb}{F[(A, B)]} \\
+    Unzip         & unzip & \fTwo{F[(A, B)]}{(F[A], F[B])} \\
   \end{tabular}
   \label{tab:normaltab}
 \end{table}
-
 
 \begin{table}[ht]
   \centering
@@ -85,31 +76,35 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
     Typeclass & \multicolumn{5}{c}{Signature} & Method \\
     \midrule
     \multirow{8}{*}{Functor}
-      & \textbf{\fa} & \textbf{\rarr} & \textbf{\texttt{(A => B)}} & \textbf{\rarr} & \textbf{\fb} & \textbf{map} \\
-      & \fa & \rarr & \texttt{B} & \rarr & \fb & as \\
-      & \fa & \rarr & & & \texttt{F[(A, A)]} & fpair \\
-      & \fa & \rarr & \texttt{G[\_]} & \rarr & \texttt{F[G[A]]} & fpoint \\
-      & \fa & \rarr & \texttt{(A => B)} & \rarr & \texttt{F[(A, B)]} & fproduct \\
-      & \fa & \rarr & \texttt{B} & \rarr & \texttt{F[(B, A)]} & strengthL \\
-      & \fa & \rarr & \texttt{B} & \rarr & \texttt{F[(A, B)]} & strengthR \\
-      & \fa & \rarr & & & \texttt{F[Unit]} & void \\[.5cm]
-    Contravariant & \fa & \rarr & \texttt{(B => A)} & \rarr & \fb & contramap \\[.5cm]
-    \multirow{4}{*}{Apply} & \fa & \rarr & \texttt{F[A => B]} & \rarr & \fb & ap \\
-                  & \fa & \rarr & \fb & \rarr & \texttt{F[(A,B)]} & tuple \\
-                  & \fa & \rarr & \fb & \rarr & \fb & *> \\
-                  & \fa & \rarr & \fb & \rarr & \fa & <* \\[.5cm]
-    \multirow{5}{*}{Applicative} & \fa & \rarr & \texttt{F[A => B]} & \rarr & \fb & ap \\
-                  & \fa & \rarr & \texttt{Boolean} & \rarr & \texttt{F[Unit]} & unlessM \\
-                  & \fa & \rarr & \texttt{Boolean} & \rarr & \texttt{F[Unit]} & whenM \\
-                  & \fa & \rarr & \texttt{Int} & \rarr & \texttt{F[List[A]]} & replicateM \\
-                  & \fa & \rarr & \texttt{Int} & \rarr & \texttt{F[Unit]} & replicateM\_ \\[.5cm]
-    \multirow{2}{*}{Bind} & \fa & \rarr & \texttt{(A => F[B])} & \rarr & \fb & flatMap \\
-                  & \fa & \rarr & \fb & \rarr & \fb & \verb$>>$ \\[.5cm]
-    \multirow{6}{*}{Traverse} & \fa & \rarr & \texttt{(A => G[B])} & \rarr & \texttt{G[F[B]]} & traverse \\
-                  & \fa & \rarr & \texttt{(A => G[F[B]])} & \rarr & \texttt{G[F[B]]} & traverseM \\
-                  & \fa & \rarr & & & \fa & reverse \\
-                  & \fa & \rarr & \fb & \rarr & \texttt{F[(A, Option[B])]} & zipL \\
-                  & \fa & \rarr & \fb & \rarr & \texttt{F[(Option[A], B)]} & zipR \\
+      & \fThree{\multirow{8}{*}{\fa}}{(A => B)}{\fb} & \textbf{map} \\
+      & \fThree{}{B}{\fb} & as \\
+      & \fTwo{}{F[(A, A)]} & fpair \\
+      & \fThree{}{G[\_]}{F[G[A]]} & fpoint \\
+      & \fThree{}{(A => B)}{F[(A, B)]} & fproduct \\
+      & \fThree{}{B}{F[(B, A)]} & strengthL \\
+      & \fThree{}{B}{F[(A, B)]} & strengthR \\
+      & \fTwo{}{F[Unit]} & void \\[.5cm]
+    Contravariant & \fThree{\fa}{(B => A)}{\fb} & contramap \\[.5cm]
+    \multirow{4}{*}{Apply}
+      & \fThree{\multirow{4}{*}{\fa}}{F[A => B]}{\fb} & ap \\
+      & \fThree{}{\fb}{F[(A,B)]} & tuple \\
+      & \fThree{}{\fb}{\fb} & \verb$*>$ \\
+      & \fThree{}{\fb}{\fa} & \verb$<*$ \\[.5cm]
+    \multirow{5}{*}{Applicative}
+      & \fThree{\multirow{5}{*}{\fa}}{F[A => B]}{\fb} & ap \\
+      & \fThree{}{Boolean}{F[Unit]} & unlessM \\
+      & \fThree{}{Boolean}{F[Unit]} & whenM \\
+      & \fThree{}{Int}{F[List[A]]} & replicateM \\
+      & \fThree{}{Int}{F[Unit]} & replicateM\_ \\[.5cm]
+    \multirow{2}{*}{Bind}
+      & \fThree{\multirow{2}{*}{\fa}}{(A => F[B])}{\fb} & flatMap \\
+      & \fThree{}{\fb}{\fb} & \verb$>>$ \\[.5cm]
+    \multirow{6}{*}{Traverse}
+      & \fThree{\multirow{5}{*}{\fa}}{(A => G[B])}{G[F[B]]} & traverse \\
+      & \fThree{}{(A => G[F[B]])}{G[F[B]]} & traverseM \\
+      & \fTwo{}{\fa} & reverse \\
+      & \fThree{}{\fb}{F[(A, Option[B])]} & zipL \\
+      & \fThree{}{\fb}{F[(Option[A], B)]} & zipR \\
 %                  &          & \texttt{& F[B] => ((A, Option[B]) => C) => (List[B], F[C])} & zipWith \\
 %                  &          & \texttt{& F[B] => ((A, Option[B]) => C) => F[C]} & zipWithL \\
 %                  &          & \texttt{& F[B] => ((Option[A], B) => C) => F[C]} & zipWithR \\
@@ -119,12 +114,36 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
 %                  &          & \texttt{& (A => State[S, B]) => State[S, F[B]]} & traverseS \\
 %                  &          & \texttt{& (A => State[S, G[B]]) => State[S, G[F[B]]]} & traverseSTrampoline \\
 %                  &          & \texttt{& (A => Kleisli[G, S, B]) => Kleisli[G, S, F[B]]} & traverseKTrampoline \\
-                  & \texttt{F[G[A]]} & \rarr & & & \texttt{G[F[A]]} & sequence \\[.5cm]
-    Foldable      & \fa & \rarr & \texttt{(A => B)} & \rarr & \texttt{B} & foldMap \\[.5cm]
-    Plus          & \fa & \rarr & \fa & \rarr & \fa & plus \\[.5cm]
-    Cobind        & \fa & \rarr & \texttt{(F[A] => B)} & \rarr & \fb & cobind \\[.5cm]
-    Zip           & \fa & \rarr & \fb & \rarr & \texttt{F[(A, B)]} & zip \\[.5cm]
-    Unzip         & \texttt{F[(A, B)]} & \rarr & & & \texttt{(F[A], F[B])} & unzip \\
+      & \fTwo{F[G[A]]}{G[F[A]]} & sequence \\
+  \end{tabular}
+\end{table}
+
+\begin{table}[ht]
+  \centering
+  \fontfamily{ppl}\selectfont
+  \begin{tabular}{rrcclll}
+    Typeclass & \multicolumn{5}{c}{Signature} & Method \\
+    \midrule
+    \multirow{16}{*}{Foldable}
+      & \fThree{\multirow{16}{*}{\fa}}{(A => B)}{B} & foldMap \\
+      & \fThree{}{B => ((A, B) => B)}{B} & foldRight \\
+      & \fThree{}{B => ((B, A) => B)}{B} & foldLeft \\
+      & \fTwo{}{A} & fold \\
+      & \fTwo{}{Int} & length \\
+      & \fThree{}{Int}{Option[A]} & index \\
+      & \fThree{}{(A, Int)}{A} & indexOr \\
+      & \fTwo{}{A} & suml \\
+      & \fTwo{}{A} & sumr \\
+      & \fTwo{}{List[A]} & toList \\
+      & \fTwo{}{Set[A]} & toSet \\
+      & \fTwo{}{Stream[A]} & toStream \\
+      & \fThree{}{(A => Boolean)}{Boolean} & all \\
+      & \fThree{}{(A => Boolean)}{Boolean} & any \\
+      & \fTwo{}{Boolean} & empty \\[.5cm]
+    Plus          & \fThree{\fa}{\fa}{\fa} & plus \\[.5cm]
+    Cobind        & \fThree{\fa}{(F[A] => B)}{\fb} & cobind \\[.5cm]
+    Zip           & \fThree{\fa}{\fb}{F[(A, B)]} & zip \\[.5cm]
+    Unzip         & \fTwo{F[(A, B)]}{(F[A], F[B])} & unzip \\
   \end{tabular}
 \end{table}
 
