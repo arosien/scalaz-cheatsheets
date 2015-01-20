@@ -23,10 +23,6 @@
 
 % Small sections of multiple columns
 \usepackage{multicol}
-
-% Provides paragraphs of dummy text
-\usepackage{lipsum}
-
 \usepackage{multirow}
 
 \newcommand{\fa}{F[A]}
@@ -34,48 +30,76 @@
 \newcommand{\rarr}{\texttt{=>}}
 \newcommand{\fTwo}[2]{\texttt{#1} & \rarr & & & \texttt{#2}}
 \newcommand{\fThree}[3]{\texttt{#1} & \rarr & \texttt{#2} & \rarr & \texttt{#3}}
+\newcommand{\sdocUrl}[1]{http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/\#scalaz.#1}
+\newcommand{\sdocHref}[1]{\href{\sdocUrl{#1}}{#1}}
 
-\title{scalaz Cheat Sheet}
+\title{scalaz Typeclass Cheat Sheet}
 \author[Adam Rosien]{Adam Rosien (\href{mailto:adam@rosien.net}{adam@rosien.net})}
-\date{2 December 2014}  % if the \date{} command is left out, the current date will be used
+% if the \date{} command is left out, the current date will be used
+% \date{2 December 2014}
 
 \begin{document}
 
 \maketitle% this prints the handout title, author, and date
 
-% TODO: hyperlinks to scalaz docs
+\section{Installation}\label{sec:installation}
 
-\section{\texttt{* -> *} Typeclasses}\label{sec:sigs}
+\noindent In your \texttt{build.sbt} file:
 
-Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "hole", i.e., \texttt{F[\_]}.
+% \begin{fullwidth}
+\begin{quote}
+  \ttfamily libraryDependencies += "org.scalaz" \%\% "scalaz-core" \% "7.0.4"
+\end{quote}
+% \end{fullwidth}
+
+\noindent Then in your \texttt{.scala} files:
+
+\begin{quote}
+  \ttfamily import scalaz.\_
+\end{quote}
+
+\section{Defining Signatures}
+
+Each typeclass is defined by a particular function signature and a set of laws\footnotemark[1] (invariants) that the typeclass must obey.
+
+\footnotetext{Typeclass laws are not listed here. See each typeclass' scaladoc link for more information.}
 
 \begin{table}[ht]
   \centering
   \fontfamily{ppl}\selectfont
-  \begin{tabular}{rcrlccl}
-    Typeclass & Method & \multicolumn{5}{c}{Signature} \\
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{rcrcccl}
+    Typeclass & \multicolumn{5}{c}{Signature} \\
     \midrule
-    Functor       & map & \fThree{\fa}{(A => B)}{\fb} \\
-    Contravariant & contramap & \fThree{\fa}{(B => A)}{\fb} \\
-    Apply         & ap & \fThree{\fa}{F[A => B]}{\fb} \\
-    Bind          & flatMap & \fThree{\fa}{(A => F[B])}{\fb} \\
-    Traverse      & traverse & \fThree{\fa}{(A => G[B])}{G[F[B]]} \\
-    Foldable      & foldMap & \fThree{\fa}{(A => B)}{B} \\
-    Plus          & plus & \fThree{\fa}{\fa}{\fa} \\
-    Cobind        & cobind & \fThree{\fa}{(F[A] => B)}{\fb} \\
-    Zip           & zip & \fThree{\fa}{\fb}{F[(A, B)]} \\
-    Unzip         & unzip & \fTwo{F[(A, B)]}{(F[A], F[B])} \\
+    \sdocHref{Functor}               & \fThree{\fa}{(A => B)}{\fb} \\
+    \sdocHref{Contravariant}         & \fThree{\fa}{(B => A)}{\fb} \\
+    \sdocHref{Apply}\footnotemark[2] & \fThree{\fa}{F[A => B]}{\fb} \\
+    \sdocHref{Bind}                  & \fThree{\fa}{(A => F[B])}{\fb} \\
+    \sdocHref{Traverse}              & \fThree{\fa}{(A => G[B])}{G[F[B]]} \\
+    \sdocHref{Foldable}              & \fThree{\fa}{(A => B)}{B} \\
+    \sdocHref{Plus}                  & \fThree{\fa}{\fa}{\fa} \\
+    \sdocHref{Cobind}                & \fThree{\fa}{(F[A] => B)}{\fb} \\
+    \sdocHref{Zip}                   & \fThree{\fa}{\fb}{F[(A, B)]} \\
+    \sdocHref{Unzip}                 & \fTwo{F[(A, B)]}{(F[A], F[B])} \\
   \end{tabular}
   \label{tab:normaltab}
 \end{table}
+
+\footnotetext[2]{\texttt{Apply} has a (broader) subtype \texttt{Applicative}. See the expanded tables below.}
+
+\newpage
+
+\section{Derived Functions}
+
+For each typeclass, its defining function is marked in \textbf{bold} and each derived function listed below it.
 
 \begin{table}[ht]
   \centering
   \fontfamily{ppl}\selectfont
   \begin{tabular}{rrcclll}
-    Typeclass & \multicolumn{5}{c}{Signature} & Method \\
+    Typeclass & \multicolumn{5}{c}{Signature} & Function \\
     \midrule
-    \multirow{8}{*}{Functor}
+    \multirow{8}{*}{\sdocHref{Functor}}
       & \fThree{\multirow{8}{*}{\fa}}{(A => B)}{\fb} & \textbf{map} \\
       & \fThree{}{B}{\fb} & as \\
       & \fTwo{}{F[(A, A)]} & fpair \\
@@ -84,23 +108,24 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
       & \fThree{}{B}{F[(B, A)]} & strengthL \\
       & \fThree{}{B}{F[(A, B)]} & strengthR \\
       & \fTwo{}{F[Unit]} & void \\[.5cm]
-    Contravariant & \fThree{\fa}{(B => A)}{\fb} & contramap \\[.5cm]
-    \multirow{4}{*}{Apply}
-      & \fThree{\multirow{4}{*}{\fa}}{F[A => B]}{\fb} & ap \\
+    \sdocHref{Contravariant} & \fThree{\fa}{(B => A)}{\fb} & \textbf{contramap} \\[.5cm]
+    \multirow{4}{*}{\sdocHref{Apply}\footnotemark[3]}
+      & \fThree{\multirow{4}{*}{\fa}}{F[A => B]}{\fb} & \textbf{ap} \\
       & \fThree{}{\fb}{F[(A,B)]} & tuple \\
       & \fThree{}{\fb}{\fb} & \verb$*>$ \\
       & \fThree{}{\fb}{\fa} & \verb$<*$ \\[.5cm]
-    \multirow{5}{*}{Applicative}
-      & \fThree{\multirow{5}{*}{\fa}}{F[A => B]}{\fb} & ap \\
+    \multirow{5}{*}{\sdocHref{Applicative}}
+      & \fThree{\multirow{5}{*}{\fa}}{F[A => B]}{\fb} & \textbf{ap} \\
       & \fThree{}{Boolean}{F[Unit]} & unlessM \\
       & \fThree{}{Boolean}{F[Unit]} & whenM \\
       & \fThree{}{Int}{F[List[A]]} & replicateM \\
       & \fThree{}{Int}{F[Unit]} & replicateM\_ \\[.5cm]
-    \multirow{2}{*}{Bind}
-      & \fThree{\multirow{2}{*}{\fa}}{(A => F[B])}{\fb} & flatMap \\
-      & \fThree{}{\fb}{\fb} & \verb$>>$ \\[.5cm]
-    \multirow{6}{*}{Traverse}
-      & \fThree{\multirow{5}{*}{\fa}}{(A => G[B])}{G[F[B]]} & traverse \\
+    \multirow{2}{*}{\sdocHref{Bind}}
+      & \fThree{\multirow{2}{*}{\fa}}{(A => F[B])}{\fb} & \textbf{flatMap} \\
+      & \fThree{}{\fb}{\fb} & \verb$>>$ \\
+      & \fThree{F[F[A]]}{}{\fa} & join \\[.5cm]
+    \multirow{6}{*}{\sdocHref{Traverse}}
+      & \fThree{\multirow{5}{*}{\fa}}{(A => G[B])}{G[F[B]]} & \textbf{traverse} \\
       & \fThree{}{(A => G[F[B]])}{G[F[B]]} & traverseM \\
       & \fTwo{}{\fa} & reverse \\
       & \fThree{}{\fb}{F[(A, Option[B])]} & zipL \\
@@ -114,18 +139,20 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
 %                  &          & \texttt{& (A => State[S, B]) => State[S, F[B]]} & traverseS \\
 %                  &          & \texttt{& (A => State[S, G[B]]) => State[S, G[F[B]]]} & traverseSTrampoline \\
 %                  &          & \texttt{& (A => Kleisli[G, S, B]) => Kleisli[G, S, F[B]]} & traverseKTrampoline \\
-      & \fTwo{F[G[A]]}{G[F[A]]} & sequence \\
+      & \fTwo{F[G[A]]}{G[F[A]]} & sequence \\[.5cm]
   \end{tabular}
 \end{table}
+
+\footnotetext[3]{Both the \texttt{Apply} and \texttt{Applicative} typeclasses implement the \texttt{ap} method; \texttt{Applicative} is a subtype of \texttt{Apply}, with an additional \texttt{point} method to lift a value into the \texttt{Applicative}.}
 
 \begin{table}[ht]
   \centering
   \fontfamily{ppl}\selectfont
   \begin{tabular}{rrcclll}
-    Typeclass & \multicolumn{5}{c}{Signature} & Method \\
+    Typeclass & \multicolumn{5}{c}{Signature} & Function \\
     \midrule
-    \multirow{16}{*}{Foldable}
-      & \fThree{\multirow{16}{*}{\fa}}{(A => B)}{B} & foldMap \\
+    \multirow{16}{*}{\sdocHref{Foldable}}
+      & \fThree{\multirow{16}{*}{\fa}}{(A => B)}{B} & \textbf{foldMap} \\
       & \fThree{}{B => ((A, B) => B)}{B} & foldRight \\
       & \fThree{}{B => ((B, A) => B)}{B} & foldLeft \\
       & \fTwo{}{A} & fold \\
@@ -140,69 +167,26 @@ Kind \texttt{* -> *} is represented in Scala as a parameterized type with one "h
       & \fThree{}{(A => Boolean)}{Boolean} & all \\
       & \fThree{}{(A => Boolean)}{Boolean} & any \\
       & \fTwo{}{Boolean} & empty \\[.5cm]
-    Plus          & \fThree{\fa}{\fa}{\fa} & plus \\[.5cm]
-    Cobind        & \fThree{\fa}{(F[A] => B)}{\fb} & cobind \\[.5cm]
-    Zip           & \fThree{\fa}{\fb}{F[(A, B)]} & zip \\[.5cm]
-    Unzip         & \fTwo{F[(A, B)]}{(F[A], F[B])} & unzip \\
+    \sdocHref{Plus}
+      & \fThree{\fa}{\fa}{\fa} & \textbf{plus} \\[.5cm]
+    \sdocHref{Cobind}
+      & \fThree{\multirow{2}{*}{\fa}}{(F[A] => B)}{\fb} & \textbf{cobind} \\
+      & \fTwo{}{F[\fa]} & cojoin \\[.5cm]
+    \multirow{3}{*}{\sdocHref{Zip}}
+      & \fThree{\multirow{3}{*}{\fa}}{\fb}{F[(A, B)]} & \textbf{zip} \\
+      & \fThree{}{F[B] => ((A, B) => C)}{F[C]} & zipWith \\
+      & \fThree{}{(F[A] => F[B])}{F[(A, B)]} & apzip \\[.5cm]
+    \multirow{3}{*}{\sdocHref{Unzip}}
+      & \fTwo{\multirow{3}{*}{F[(A, B)]}}{(\fa, \fb)} & \textbf{unzip} \\
+      & \fTwo{}{\fa} & firsts \\
+      & \fTwo{}{\fb} & seconds \\[.5cm]
   \end{tabular}
-\end{table}
-
-
-\section{Monads}\label{sec:monads}
-
-\begin{table}[ht]
-  \centering
-  \fontfamily{ppl}\selectfont
-  \begin{tabular}{rllll}
- %   \toprule
-    Monad & Type & Effect\footnotemark[1] \\
-    \midrule
-    Identity & \texttt{Id[A]} & nothing \\
-    List  & \texttt{List[A]}\footnotemark[2]          & arbitrary \# of results \\
-    & \verb$IList[A]$ & \\
-    Option & \texttt{Option[A]}\footnotemark[2]       & anonymous exception \\
-    & \verb$Maybe[A]$ & optional values \\
-    Either & \texttt{Either[A, B]}\footnotemark[2]        & exception \\
-    & \verb$\/[A, B]$ & \\
-    Reader & \texttt{Reader[E, A]}       & read environment value of type \verb$E$  \\
-                 & & "dependency injection" \\
-    Writer & \texttt{Writer[W, A]}        & append values of type \verb$W$ \\
-              & & "logging" \\
-    State & \texttt{State[S, A]}      & get/set state of type \verb$S$ \\
-    IO  & \texttt{IO[A]}         & side-effect\footnotemark[3]  \\
-%    \bottomrule
-  \end{tabular}
-  \label{tab:normaltab}
-  %\zsavepos{pos:normaltab}
-\end{table}
-
-\footnotetext[1]{An \textit{effect} is \textbf{not} a \textit{side-effect}: the former is referentially-transparent while the latter is not.}
-
-\footnotetext[2]{Defined in Scala itself, not in scalaz.}
-
-\footnotetext[3]{Wait, how can a side-effect become just an effect?}
-
-
-\section{Monad Transformers}\label{sec:monadtrans}
-
-\begin{table}[ht]
-  \centering
-  \fontfamily{ppl}\selectfont
-  \begin{tabular}{rllll}
-  OptionT \\
-  EitherT \\
-  ReaderT \\
-  WriterT \\
-  StateT \\
-  \end{tabular}
-  \label{tab:normaltab}
-  %\zsavepos{pos:normaltab}
 \end{table}
 
 \bibliography{sample-handout}
 \bibliographystyle{plainnat}
 
-\fancyfoot[C]{\copyright 2014 Adam S. Rosien (\href{mailto:adam@rosien.net}{\texttt{adam@rosien.net}}) \\ Source at \href{https://github.com/arosien/scalaz-base-talk-201208}{\texttt{https://github.com/arosien/scalaz-base-talk-201208}}}
-
+\fancyfoot[C]{\copyright 2015 Adam S. Rosien (\href{mailto:adam@rosien.net}{\texttt{adam@rosien.net}}) \\
+Issues and suggestions welcome at \href{https://github.com/arosien/scalaz-cheatsheets}{\texttt{https://github.com/arosien/scalaz-cheatsheets}}}
 
 \end{document}
