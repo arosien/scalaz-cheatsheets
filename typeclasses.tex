@@ -60,7 +60,7 @@
 
 \section{Defining Signatures}
 
-Each typeclass is defined by a particular function signature and a set of laws\footnotemark[1] (invariants) that the typeclass must obey.
+Each typeclass is defined by a particular function signature and a set of laws\footnotemark (invariants) that the typeclass must obey.
 
 \footnotetext{Typeclass laws are not listed here. See each typeclass' scaladoc link for more information.}
 
@@ -73,10 +73,10 @@ Each typeclass is defined by a particular function signature and a set of laws\f
     \midrule
     \sdocHref{Functor}               & \fThree{\fa}{(A => B)}{\fb} \\
     \sdocHref{Contravariant}         & \fThree{\fa}{(B => A)}{\fb} \\
-    \sdocHref{Apply}\footnotemark[2] & \fThree{\fa}{F[A => B]}{\fb} \\
+    \sdocHref{Apply}\footnotemark    & \fThree{\fa}{F[A => B]}{\fb} \\
     \sdocHref{Bind}                  & \fThree{\fa}{(A => F[B])}{\fb} \\
-    \sdocHref{Traverse}              & \fThree{\fa}{(A => G[B])}{G[F[B]]} \\
-    \sdocHref{Foldable}              & \fThree{\fa}{(A => B)}{B} \\
+    \sdocHref{Traverse}\footnotemark & \fThree{\fa}{(A => G[B])}{G[F[B]]} \\
+    \sdocHref{Foldable}\footnotemark & \fThree{\fa}{(A => B)}{B} \\
     \sdocHref{Plus}                  & \fThree{\fa}{\fa}{\fa} \\
     \sdocHref{Cobind}                & \fThree{\fa}{(F[A] => B)}{\fb} \\
     \sdocHref{Zip}                   & \fThree{\fa}{\fb}{F[(A, B)]} \\
@@ -85,7 +85,13 @@ Each typeclass is defined by a particular function signature and a set of laws\f
   \label{tab:normaltab}
 \end{table}
 
+% hrm need manual numbering here
 \footnotetext[2]{\texttt{Apply} has a (broader) subtype \texttt{Applicative}. See the expanded tables below.}
+
+% hrm need manual numbering here
+\footnotetext[3]{\texttt{Traverse} requires that the target type constructor \texttt{G} have an implicit \texttt{Applicative} instance available; that is, an implicit \texttt{Applicative[G]} must be in scope. \\ Informally, traversing a structure maps each value to some effect, which are combined into a single effect that produces a value having the original structure. For example, by transforming every \texttt{A} of a \texttt{List[A]} into a \texttt{Future[B]}, the traversal would return a \texttt{Future[List[B]]}.}
+
+\footnotetext{\texttt{Foldable} requires that the target type \texttt{B} have an implicit \texttt{Monoid} instance available; that is, an implicit \texttt{Monoid[B]} must be in scope. \\ Informally, you're folding something up, so you need to know how to squash things together!}
 
 \newpage
 
