@@ -115,21 +115,36 @@ For each typeclass, its defining function is marked in \textbf{bold} and each de
       & \fThree{}{B}{F[(A, B)]} & strengthR \\
       & \fTwo{}{F[Unit]} & void \\[.5cm]
     \sdocHref{Contravariant} & \fThree{\fa}{(B => A)}{\fb} & \textbf{contramap} \\[.5cm]
-    \multirow{4}{*}{\sdocHref{Apply}\footnotemark[3]}
-      & \fThree{\multirow{4}{*}{\fa}}{F[A => B]}{\fb} & \textbf{ap} \\
+    \multirow{5}{*}{\sdocHref{Apply}\footnotemark}
+      & \fThree{\multirow{5}{*}{\fa}}{F[A => B]}{\fb} & \textbf{ap} \\
       & \fThree{}{\fb}{F[(A,B)]} & tuple \\
       & \fThree{}{\fb}{\fb} & \verb$*>$ \\
-      & \fThree{}{\fb}{\fa} & \verb$<*$ \\[.5cm]
+      & \fThree{}{\fb}{\fa} & \verb$<*$ \\
+      & \fThree{}{F[B] => ((A, B) => C)}{F[C]} & \texttt{apply2}\footnotemark \\[.5cm]
+      % & \fThree{}{F[B] => F[C] => ((A, B, C) => D)}{F[D]} & apply3 \\[.5cm]
     \multirow{5}{*}{\sdocHref{Applicative}}
       & \fThree{\multirow{5}{*}{\fa}}{F[A => B]}{\fb} & \textbf{ap} \\
       & \fThree{}{Boolean}{F[Unit]} & unlessM \\
       & \fThree{}{Boolean}{F[Unit]} & whenM \\
       & \fThree{}{Int}{F[List[A]]} & replicateM \\
       & \fThree{}{Int}{F[Unit]} & replicateM\_ \\[.5cm]
-    \multirow{2}{*}{\sdocHref{Bind}}
+    \multirow{3}{*}{\sdocHref{Bind}}
       & \fThree{\multirow{2}{*}{\fa}}{(A => F[B])}{\fb} & \textbf{flatMap} \\
       & \fThree{}{\fb}{\fb} & \verb$>>$ \\
       & \fThree{F[F[A]]}{}{\fa} & join \\[.5cm]
+  \end{tabular}
+\end{table}
+
+\footnotetext[5]{Both the \texttt{Apply} and \texttt{Applicative} typeclasses implement the \texttt{ap} method; \texttt{Applicative} is a subtype of \texttt{Apply}, with an additional \texttt{point} method to lift a value into the \texttt{Applicative}.}
+
+\footnotetext{In addition to \texttt{apply2}, there is \texttt{apply3}, etc., up to \texttt{apply12}. That is, \texttt{applyN} takes N \texttt{F}'s and a function that tranforms an N-tuple into a single value.}
+
+\begin{table}[ht]
+  \centering
+  \fontfamily{ppl}\selectfont
+  \begin{tabular}{rrcclll}
+    Typeclass & \multicolumn{5}{c}{Signature} & Function \\
+    \midrule
     \multirow{6}{*}{\sdocHref{Traverse}}
       & \fThree{\multirow{5}{*}{\fa}}{(A => G[B])}{G[F[B]]} & \textbf{traverse} \\
       & \fThree{}{(A => G[F[B]])}{G[F[B]]} & traverseM \\
@@ -146,17 +161,6 @@ For each typeclass, its defining function is marked in \textbf{bold} and each de
 %                  &          & \texttt{& (A => State[S, G[B]]) => State[S, G[F[B]]]} & traverseSTrampoline \\
 %                  &          & \texttt{& (A => Kleisli[G, S, B]) => Kleisli[G, S, F[B]]} & traverseKTrampoline \\
       & \fTwo{F[G[A]]}{G[F[A]]} & sequence \\[.5cm]
-  \end{tabular}
-\end{table}
-
-\footnotetext[3]{Both the \texttt{Apply} and \texttt{Applicative} typeclasses implement the \texttt{ap} method; \texttt{Applicative} is a subtype of \texttt{Apply}, with an additional \texttt{point} method to lift a value into the \texttt{Applicative}.}
-
-\begin{table}[ht]
-  \centering
-  \fontfamily{ppl}\selectfont
-  \begin{tabular}{rrcclll}
-    Typeclass & \multicolumn{5}{c}{Signature} & Function \\
-    \midrule
     \multirow{16}{*}{\sdocHref{Foldable}}
       & \fThree{\multirow{16}{*}{\fa}}{(A => B)}{B} & \textbf{foldMap} \\
       & \fThree{}{B => ((A, B) => B)}{B} & foldRight \\
@@ -175,7 +179,7 @@ For each typeclass, its defining function is marked in \textbf{bold} and each de
       & \fTwo{}{Boolean} & empty \\[.5cm]
     \sdocHref{Plus}
       & \fThree{\fa}{\fa}{\fa} & \textbf{plus} \\[.5cm]
-    \sdocHref{Cobind}
+    \multirow{2}{*}{\sdocHref{Cobind}}
       & \fThree{\multirow{2}{*}{\fa}}{(F[A] => B)}{\fb} & \textbf{cobind} \\
       & \fTwo{}{F[\fa]} & cojoin \\[.5cm]
     \multirow{3}{*}{\sdocHref{Zip}}
